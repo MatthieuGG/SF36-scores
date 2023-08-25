@@ -1,2 +1,7 @@
-# SF36-scores
-Permites to obtain scores (8 sub-domains) from .csv files
+# How to obtain SF36-scores ?
+SF36 questionnaires assess the quality of life (QoL). Through 36 items, you can obtain sub-domain (Physical Functioning,	Role-Physical,	Bodily-Pain,	General Health,	Vitality,	Social Functioning,	Role-Emotional,	Mental Health,	Reported Health Transition,	Mean Current Health) as well as general domains (PHYSICAL,	MENTAL,	GLOBAL) 0 to 100 scores.  
+
+To do so, you need to:
+* transpose the questionnaires into .csv files (see model provided)
+* put all the .csv files in the same folder
+* use the code provided (**Scoring SF36.ipynb**) on your transposed .csv files to obtain the scores. You have to precise the path of the folder where all the .csv are, and the path where you want to save the result
