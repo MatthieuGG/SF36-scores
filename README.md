@@ -6,4 +6,4 @@ To do so, you need to:
 * put all the .csv files in the same folder
 * use the code provided (**Scoring SF36.ipynb**) on your transposed .csv files to obtain the scores. You have to precise the path of the folder where all the .csv are, and the path where you want to save the result.
 
-We used the guidelines  "SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr.m PhD.
+We used the guidelines  "SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD.
