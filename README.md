@@ -1,7 +1,7 @@
 # How to obtain SF36-scores
 
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10060412.svg)](https://doi.org/10.5281/zenodo.10060412)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10086861.svg)](https://doi.org/10.5281/zenodo.10086861)
 
 
 SF36 questionnaires assess the quality of life (QoL). Through 36 items, you can obtain sub-domain (Physical Functioning,	Role-Physical,	Bodily-Pain,	General Health,	Vitality,	Social Functioning,	Role-Emotional,	Mental Health,	Reported Health Transition,	Mean Current Health) as well as general domains (PHYSICAL,	MENTAL,	GLOBAL) 0 to 100 scores.  
