@@ -10,4 +10,4 @@ To do so, you need to:
 * transpose the questionnaires into .csv files, and put them all in the same folder (see "sample") **WARNING: we use a version of the SF36 in which the order or the questions are different from original**
 * use the code provided (**Scoring SF36.ipynb**) on your transposed .csv files to obtain the scores. You can run the code as is if you keep the same path.  
 
-We used the guidelines  "SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD.
+We used the guidelines  ["SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD](https://www.researchgate.net/publication/247503121_SF36_Health_Survey_Manual_and_Interpretation_Guide).
