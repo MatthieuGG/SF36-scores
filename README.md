@@ -1,4 +1,4 @@
-# How to obtain SF36-scores
+# How to obtain SF36-scores in different subdomains
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10086861.svg)](https://doi.org/10.5281/zenodo.10086861)
 
