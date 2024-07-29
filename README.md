@@ -11,5 +11,6 @@ SF36 questionnaires assess the quality of life (QoL). Through 36 items, you can 
 To do so, you need to:
 * transpose your paper/pdf/online questionnaires into .csv files, and put them all in the same folder (see exemple file structure in [~/sample](https://github.com/MatthieuGG/SF36-scores/tree/main/sample)) **WARNING: we use a version of the SF36 in which the order or the questions are different from original. Please check you use the same question order.**
 * use the code provided (**[Scoring SF36.ipynb](https://github.com/MatthieuGG/SF36-scores/blob/main/Scoring%20SF36.ipynb)**) on your transposed .csv files to obtain the scores (see [~/results](https://github.com/MatthieuGG/SF36-scores/tree/main/results)). You can run the code as is if you keep the same path.  
-
+* This notebook imports the data, check for conditions (duplicates, missing data, out of range, reorganise), and calculates the different subdomains values, then saves the results.
+---
 We used the guidelines  ["SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD](https://www.researchgate.net/publication/247503121_SF36_Health_Survey_Manual_and_Interpretation_Guide).
