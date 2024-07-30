@@ -14,3 +14,6 @@ To do so, you need to:
 * This notebook imports the data, check for conditions (duplicates, missing data, out of range, reorganise), and calculates the different subdomains values, then saves the results.
 ---
 We used the guidelines  ["SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD](https://www.researchgate.net/publication/247503121_SF36_Health_Survey_Manual_and_Interpretation_Guide).
+
+**To cite this work:**
+> Matthieu Gallou-Guyot. (2023). SF36-scoring. Zenodo. https://doi.org/10.5281/zenodo.10060411 
