@@ -2,18 +2,22 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10086861.svg)](https://doi.org/10.5281/zenodo.10086861)
 
-**Input: individual .csv files  ([~/sample](https://github.com/MatthieuGG/SF36-scores/tree/main/sample))  
-Output: individual and comon .csv files  ([~/results](https://github.com/MatthieuGG/SF36-scores/tree/main/results))  
-Script: [SF36-scores.ipynb](https://github.com/MatthieuGG/SF36-scores/blob/main/SF36-scores.ipynb)**  
+Run the soft from terminal using ```python3 sf36.py [-d input_path] [-o output_path] [-ind]```  
 
-SF36 questionnaires assess the quality of life (QoL). Through 36 items, you can obtain sub-domain (Physical Functioning,	Role-Physical,	Bodily-Pain,	General Health,	Vitality,	Social Functioning,	Role-Emotional,	Mental Health,	Reported Health Transition,	Mean Current Health) as well as general domains (PHYSICAL,	MENTAL,	GLOBAL) 0 to 100 scores.  
+- `[-d]` optional, defines the path to your data. Default is [~/data/](https://github.com/MatthieuGG/SF36-scores/tree/main/data) in the same folder.  
+- `[-o]` optional, defines the path to your results. Default is [~/results/](https://github.com/MatthieuGG/SF36-scores/tree/main/results) in the same folder.  
+- `[-ind]` optional, saves individual files. Default is [one concatenated file](https://github.com/MatthieuGG/SF36-scores/blob/main/results/concatenated_results.csv).  
 
-To do so, you need to:
-* transpose your paper/pdf/online questionnaires into .csv files, and put them all in the same folder (see exemple file structure in [~/sample](https://github.com/MatthieuGG/SF36-scores/tree/main/sample)) **WARNING: we use a version of the SF36 in which the order or the questions are different from original. Please check you use the same question order.**
-* use the code provided (**[SF36-scores.ipynb](https://github.com/MatthieuGG/SF36-scores/blob/main/SF36-scores.ipynb)**) on your transposed .csv files to obtain the scores (see [~/results](https://github.com/MatthieuGG/SF36-scores/tree/main/results)). You can run the code as is if you keep the same path.  
-* This notebook imports the data, check for conditions (duplicates, missing data, out of range, reorganise), and calculates the different subdomains values, then saves the results.
----
-We used the guidelines  ["SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD](https://www.researchgate.net/publication/247503121_SF36_Health_Survey_Manual_and_Interpretation_Guide).
+You first have to go in the folder where sf36.py is located using `cd`. Exemple of use: 
+
+```
+> cd /Users/Me/Downloads/SF36-scores-main/  
+> python3 sf36.py -d /Users/Me/Documents/sf36/myData/ -o /Users/Me/Documents/sf36/myResults/ -ind
+```
+
+See more information in the [documentation]() *(not yet edited)*. **WARNING: we use a version of the SF36 in which the order or the questions are different from original.** See an exemple here [SF36.pdf]() *(not provided yet)* to check your questions order. We used the guidelines  ["SF36 Health Survey - Manual and Interpretation Guide" from John E. Ware, Jr. PhD](https://www.researchgate.net/publication/247503121_SF36_Health_Survey_Manual_and_Interpretation_Guide).
 
 **To cite this work:**
 > Matthieu Gallou-Guyot. (2023). SF36-scores. Zenodo. https://doi.org/10.5281/zenodo.10060411 
+
+*(old version using a Jupyter Nootebook is still avaliable in [~/old/](https://github.com/MatthieuGG/SF36-scores/tree/main/old))*
