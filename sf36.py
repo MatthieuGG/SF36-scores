@@ -7,11 +7,6 @@ import time
 import subprocess
 import sys
 import numpy as np
-import re
-import glob
-import shutil
-from datetime import date
-from datetime import datetime
 
 def print_warning(message):
     """Prints a warning message in yellow"""
