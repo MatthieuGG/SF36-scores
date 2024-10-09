@@ -65,43 +65,44 @@ def import_csv_files(path):
 
     data_dict = {}
     expected_columns = [
-        "ID",	"Q1",	"Q2",	"Q3a",	"Q3b",	"Q3c",	"Q3d",	"Q4a",	"Q4b",	"Q4c", "Q5",	"Q6",	"Q7",	"Q8",	
-        "Q9a",	"Q9b",	"Q9c",	"Q9d",	"Q9e",	"Q9f",	"Q9g",	"Q9h",	"Q9i",	"Q9j",
-        "Q10a",	"Q10b",	"Q10c",	"Q10d",	"Q10e",	"Q10f",	"Q10g",	"Q10h",	"Q10i",	"Q11a",	"Q11b",	"Q11c",	"Q11d"
+        "ID", "Q1", "Q2", "Q3a", "Q3b", "Q3c", "Q3d", "Q4a", "Q4b", "Q4c", "Q5", "Q6", "Q7", "Q8",
+        "Q9a", "Q9b", "Q9c", "Q9d", "Q9e", "Q9f", "Q9g", "Q9h", "Q9i", "Q9j",
+        "Q10a", "Q10b", "Q10c", "Q10d", "Q10e", "Q10f", "Q10g", "Q10h", "Q10i", "Q11a", "Q11b", "Q11c", "Q11d"
     ]
     
     # Loop through the CSV files to import them
     for file_name in csv_files:
         file_path = os.path.join(path, file_name)
 
-        df = pd.read_csv(file_path) 
-        df.columns = expected_columns  
+        df = pd.read_csv(file_path)
 
-        # Reset index after dropping the first row
-        df = df.reset_index(drop=True) 
+        # Check for missing or extra columns
+        missing_columns = set(expected_columns) - set(df.columns)
+        extra_columns = set(df.columns) - set(expected_columns)
+        
+        if missing_columns:
+            print_error(f"Error: The file {file_name} is missing columns: {missing_columns}")
+            return None  # Stop and return None if columns are missing
+        if extra_columns:
+            print_error(f"Error: The file {file_name} has extra columns: {extra_columns}")
+            return None  # Stop and return None if there are extra columns
 
-        # Check for expected columns
-        if not all(col in df.columns for col in expected_columns):
-            print_error(f"Error: The following expected columns are missing in {file_name}: {set(expected_columns) - set(df.columns)}")
-            return None 
-
-        # Check that values in columns P1 through P16b are either empty or numeric
+        # Check that values in columns Q1 through Q11d are either empty or numeric
         for col in expected_columns[1:]:  # Skip 'ID'
-            if col in df.columns:
-                if not df[col].apply(lambda x: pd.isnull(x) or isinstance(x, (int, float))).all():
-                    print_error(f"Error: Column '{col}' in {file_name} should contain only empty or numeric values.")
-                    return None 
+            if not df[col].apply(lambda x: pd.isnull(x) or isinstance(x, (int, float))).all():
+                print_error(f"Error: Column '{col}' in {file_name} should contain only empty or numeric values.")
+                return None  # Stop if column values are not valid
         
         data_dict[file_name] = df
 
     # Check if all CSV files were successfully imported
     if csv_file_count == len(data_dict):
-        print(f"{csv_file_count} csv files imported.")
-        return data_dict  
+        print(f"{csv_file_count} CSV files imported successfully.")
     else:
         warning_message = f"{csv_file_count} .csv files found but only {len(data_dict)} imported."
         print_warning(warning_message)
-        return data_dict
+    
+    return data_dict
     
 def check_data_integrity(data_dict):
     """
@@ -114,96 +115,127 @@ def check_data_integrity(data_dict):
     Returns:
         set: A set of DataFrame names that have integrity issues.
     """
-    print("Check data integrity...")
+    print("Checking data integrity...")
 
-    names_list = []
-    has_issues = False  # Track if any issues are found
     problematic_dfs = set()  # To keep track of DataFrames with issues
+    has_issues = False  # Track if any issues are found
 
-    # Duplicates in df
-    if len(names_list) != len(set(names_list)):
-        print_warning("Duplicates in provided dataframes")
-        has_issues = True
-        problematic_dfs.update(names_list)
-
-    # Missing data
+    # Ignoring missing data for now, we'll handle them later
     for key, df in data_dict.items():
-        missing_values = df[df.isna().any(axis=1)]
-        if not missing_values.empty:
-            for index, row in missing_values.iterrows():
-                missing_columns = row.index[row.isna()]
-                print(f"ID {key}: missing in {', '.join(missing_columns)}")
-                problematic_dfs.add(key)
-                has_issues = True
-
-    # Correct time format: 7 days, 24 hours, 60 minutes
-    columns_to_check = ["Q1",	"Q2",	"Q3a",	"Q3b",	"Q3c",	"Q3d",	"Q4a",	"Q4b",	"Q4c", "Q5",	"Q6",	"Q7",	"Q8",	
-        "Q9a",	"Q9b",	"Q9c",	"Q9d",	"Q9e",	"Q9f",	"Q9g",	"Q9h",	"Q9i",	"Q9j",
-        "Q10a",	"Q10b",	"Q10c",	"Q10d",	"Q10e",	"Q10f",	"Q10g",	"Q10h",	"Q10i",	"Q11a",	"Q11b",	"Q11c",	"Q11d"]
+        # Only check rows where there are no missing values
+        complete_data = df.dropna()
+        if complete_data.empty:
+            continue  # Skip if the entire DataFrame is empty after dropping missing values
+        
+    # Validating ranges in specific columns
+    columns_to_check = [
+        "Q1", "Q2", "Q3a", "Q3b", "Q3c", "Q3d", "Q4a", "Q4b", "Q4c", "Q5", "Q6", "Q7", "Q8",
+        "Q9a", "Q9b", "Q9c", "Q9d", "Q9e", "Q9f", "Q9g", "Q9h", "Q9i", "Q9j",
+        "Q10a", "Q10b", "Q10c", "Q10d", "Q10e", "Q10f", "Q10g", "Q10h", "Q10i", 
+        "Q11a", "Q11b", "Q11c", "Q11d"
+    ]
 
     acceptable_ranges = {
-    'Q1': (1, 5),
-    'Q2': (1, 5),
-    'Q3a': (1, 2),
-    'Q3b': (1, 2),
-    'Q3c': (1, 2),
-    'Q3d': (1, 2),
-    'Q4a': (1, 2),
-    'Q4b': (1, 2),
-    'Q4c': (1, 2),
-    'Q5': (1, 5),
-    'Q6': (1, 6),
-    'Q7': (1, 5),
-    'Q8': (1, 5),
-    'Q9a': (1,3), 
-    'Q9b': (1,3), 
-    'Q9c': (1,3), 
-    'Q9d': (1,3), 
-    'Q9e': (1,3), 
-    'Q9f': (1,3), 
-    'Q9g': (1,3),
-    'Q9h': (1,3), 
-    'Q9i': (1,3), 
-    'Q9j': (1,3), 
-    'Q10a': (1,6), 
-    'Q10b': (1,6), 
-    'Q10c': (1,6), 
-    'Q10d': (1,6), 
-    'Q10e': (1,6), 
-    'Q10f': (1,6),
-    'Q10g': (1,6), 
-    'Q10h': (1,6), 
-    'Q10i': (1,6), 
-    'Q11a': (1,5), 
-    'Q11b': (1,5), 
-    'Q11c': (1,5), 
-    'Q11d': (1,5)
+        'Q1': (1, 5), 'Q2': (1, 5), 'Q3a': (1, 2), 'Q3b': (1, 2), 'Q3c': (1, 2),
+        'Q3d': (1, 2), 'Q4a': (1, 2), 'Q4b': (1, 2), 'Q4c': (1, 2), 'Q5': (1, 5),
+        'Q6': (1, 6), 'Q7': (1, 5), 'Q8': (1, 5), 'Q9a': (1, 3), 'Q9b': (1, 3),
+        'Q9c': (1, 3), 'Q9d': (1, 3), 'Q9e': (1, 3), 'Q9f': (1, 3), 'Q9g': (1, 3),
+        'Q9h': (1, 3), 'Q9i': (1, 3), 'Q9j': (1, 3), 'Q10a': (1, 6), 'Q10b': (1, 6),
+        'Q10c': (1, 6), 'Q10d': (1, 6), 'Q10e': (1, 6), 'Q10f': (1, 6), 'Q10g': (1, 6),
+        'Q10h': (1, 6), 'Q10i': (1, 6), 'Q11a': (1, 5), 'Q11b': (1, 5), 'Q11c': (1, 5), 
+        'Q11d': (1, 5)
     }
 
-    aberrant_data = {}
-
-    for key, df in data_dict.items():
-        for index, row in df.iterrows():
-            for col in columns_to_check:
-                value = row[col]
-                if value < acceptable_ranges[col][0] or value > acceptable_ranges[col][1]:
-                    if key not in aberrant_data:
-                        aberrant_data[key] = []
-                    aberrant_data[key].append((index, col))
-                    
-    for key, values in aberrant_data.items():
-        print_warning(f"Dataframe {key}:")
-        for index, col in values:
-            print_warning(f"Wrong value in {col} at {index}. Please check the correct time format: 7 days, 24 hours, 60 minutes")
-
+    for index, row in complete_data.iterrows():
+        for col in columns_to_check:
+            value = row[col]
+            if pd.isnull(value):
+                continue  # Skip NaN values, as they are checked separately
+            if not isinstance(value, (int, float)):
+                print(f"DataFrame {key}, Row {index}: Non-numeric value in {col}")
+                problematic_dfs.add(key)
+                has_issues = True
+            elif value < acceptable_ranges[col][0] or value > acceptable_ranges[col][1]:
+                print(f"DataFrame {key}, Row {index}: Value {value} in {col} is out of range.")
+                problematic_dfs.add(key)
+                has_issues = True
+    
     if has_issues:
-        print("This has to be checked manually in raw data.")
-    if not has_issues:
-        print("No issues found in data integrity checks.")
+        error_message = "Integrity issues found. Manual check required."
+        print_error(error_message)
+        return
+    else:
+        pass
 
-    return problematic_dfs  # Return the DataFrames with integrity issues
+    return problematic_dfs if problematic_dfs else set()  # Return the DataFrames with integrity issues
+
+def reorganize_columns(data_dict):
+    """
+    This function reorganizes and renames the columns in the DataFrames contained in the data_dict.
+    
+    Args:
+        data_dict (dict): A dictionary with DataFrame names as keys and corresponding DataFrames as values.
+    
+    Returns:
+        dict: A dictionary with the reorganized DataFrames.
+    """
+    print("Reorganizing columns order...")
+    # List of columns with a prefix to be renamed
+    columns_to_prefix = ['Q1', 'Q2', 'Q3a', 'Q3b', 'Q3c', 'Q3d', 'Q4a', 'Q4b', 'Q4c', 'Q5', 'Q6', 'Q7', 'Q8', 
+                         'Q9a', 'Q9b', 'Q9c', 'Q9d', 'Q9e', 'Q9f', 'Q9g', 'Q9h', 'Q9i', 'Q9j', 
+                         'Q10a', 'Q10b', 'Q10c', 'Q10d', 'Q10e', 'Q10f', 'Q10g', 'Q10h', 'Q10i', 
+                         'Q11a', 'Q11b', 'Q11c', 'Q11d']
+
+    # Mapping of old columns to new columns
+    mappings = {
+        'Old_Q9': 'New_Q3',
+        'Old_Q3': 'New_Q4',
+        'Old_Q4': 'New_Q5',
+        'Old_Q5': 'New_Q6',
+        'Old_Q6': 'New_Q7',
+        'Old_Q7': 'New_Q8',
+        'Old_Q10': 'New_Q9',
+        'Old_Q8': 'New_Q10'
+    }
+
+    # New order of the columns
+    new_order = ['ID', '1', '2', '3a', '3b', '3c', '3d', '3e', '3f', '3g', '3h', '3i', '3j', 
+                 '4a', '4b', '4c', '4d', '5a', '5b', '5c', '6', '7', '8', 
+                 '9a', '9b', '9c', '9d', '9e', '9f', '9g', '9h', '9i', '10', '11a', '11b', '11c', '11d']
+
+    # Loop through each DataFrame in data_dict
+    for key, df in data_dict.items():
+        # Add the prefix "Old_" to the relevant columns
+        for col in columns_to_prefix:
+            if col in df.columns:
+                df.rename(columns={col: 'Old_' + col}, inplace=True)
+
+        # Apply mappings to rename columns with new prefixes
+        for col in df.columns:
+            for old, new in mappings.items():
+                if col.startswith(old):
+                    new_col = col.replace(old, new)
+                    df.rename(columns={col: new_col}, inplace=True)
+
+        # Remove the 'Old_' and 'New_' prefixes from the columns
+        df.columns = df.columns.str.replace(r'(Old|New)_Q', '', regex=True)
+
+        # Reorganize the columns in the new order
+        try:
+            df = df[new_order]
+        except KeyError as e:
+            print(f"Error: Missing columns {e} in DataFrame {key}. Please check the column mappings or data.")
+        
+        # Update the DataFrame in the dictionary
+        data_dict[key] = df
+
+    return data_dict
 
 def recalibrate_scores(data_dict, names_with_issues):
+    """
+    """
+    print("Recalibrating scores for some items...")
+
     # Reverse / recalibrate score for some items
     replacement_dicts = {
         '1': {1: 5.0, 2: 4.4, 3: 3.4, 4: 2.0, 5: 1.0},
@@ -216,7 +248,10 @@ def recalibrate_scores(data_dict, names_with_issues):
         '11b': {1: 5, 2: 4, 3: 3, 4: 2, 5: 1},
         '11d': {1: 5, 2: 4, 3: 3, 4: 2, 5: 1}
     }
-    print("Recalibrating scores for some items...")
+
+    if names_with_issues is None:
+        names_with_issues = set()  # Initialize as an empty set if None
+    
     for key, df in data_dict.items():
         if key in names_with_issues:  # Skip this DataFrame if it has issues
             print(f"Skipping {key} due to integrity issues.")
@@ -321,7 +356,10 @@ def compute_raw_scales(data_dict):
     return scale_dict
 
 def transform_raw_scales_to_0_100(scale_dict, replacement_dicts):
-    """Transform raw scales to a 0-100 scale."""
+    """
+    Transform raw scales to a 0-100 scale.
+    """
+    print("Transforming raw scales into 0-100 scales...")
     transformed_scale_dict = {}
 
     for key, df in scale_dict.items():
@@ -345,8 +383,11 @@ def transform_raw_scales_to_0_100(scale_dict, replacement_dicts):
     return transformed_scale_dict
 
 def compute_composite_scores(transformed_scale_dict):
-    """Computes composite scores based on the transformed scale DataFrames."""
+    """
+    Computes composite scores based on the transformed scale DataFrames.
+    """
     print("Computing composite scores...")
+
     composite_scores_dict = {}
 
     for key, df in transformed_scale_dict.items():
@@ -373,31 +414,60 @@ def compute_composite_scores(transformed_scale_dict):
 
     return composite_scores_dict
 
-# def save_results(transformed_scale_dict, final_df, saving_path_ind, args):
-#     """
-#     Save results to the specified output directory.
+def merge_data(data_dict, composite_scores_dict):
+    """
+    This function merges DataFrames from `data_dict` and `composite_scores_dict` based on matching keys 
+    and then concatenates all the merged DataFrames vertically (axis=0).
+    
+    Args:
+        data_dict (dict): A dictionary of DataFrames with file names as keys.
+        composite_scores_dict (dict): Another dictionary of DataFrames with file names as keys.
+    
+    Returns:
+        pd.DataFrame: A single concatenated DataFrame containing all rows and columns.
+    """
+    print("Merging reorganised and filled data with composite scores...")
+    
+    merged_dict = {}  # List to store merged DataFrames
 
-#     Parameters:
-#     - transformed_scale_dict (dict): Dictionary of DataFrames to save independently.
-#     - args (argparse.Namespace): Command line arguments including --ind.
-#     - final_df (DataFrame): Concatenated DataFrame to save if not saving independently.
-#     - saving_path_ind (str): Path to save the results.
-#     """
-#     # Ensure the output directory exists
-#     os.makedirs(saving_path_ind, exist_ok=True)
+    # Loop through the keys in data_dict
+    for key in data_dict:
+        if key in composite_scores_dict:  # Ensure the key exists in both dictionaries
+            # Merge DataFrames on axis=1 (columns)
+            merged_df = pd.merge(data_dict[key], composite_scores_dict[key], left_index=True, right_index=True, how='outer')
+            merged_df = merged_df.drop(columns=['ID_y'], errors='ignore')
+            merged_df.rename(columns={'ID_x': 'ID'}, inplace=True)
+            merged_dict[key] = merged_df
+    
+    return merged_dict
 
-#     if args.ind:
-#         # Save each DataFrame separately
-#         for key, df in transformed_scale_dict.items():
-#             output_file = os.path.join(saving_path_ind, f"{key}_results.csv")
-#             df.to_csv(output_file, index=False)
-#             print(f"Saved independent file: {output_file}")
-#     else:
-#         # Save the concatenated DataFrame
-#         final_output_file = os.path.join(saving_path_ind, "final_results.csv")
-#         final_df.to_csv(final_output_file, index=False)
-#         print(f"Saved concatenated file: {final_output_file}")
+def save_results(merged_dict, saving_path_ind, args):
+    """
+    Save results to the specified output directory.
 
+    Parameters:
+    - transformed_scale_dict (dict): Dictionary of DataFrames to save independently.
+    - final_df (DataFrame): Concatenated DataFrame to save if not saving independently.
+    - saving_path_ind (str): Path to save the results.
+    - args (argparse.Namespace): Command line arguments including --ind.
+    """
+    print("Saving results...")
+
+    # Ensure the output directory exists
+    os.makedirs(saving_path_ind, exist_ok=True)
+
+    if args.ind:
+        # Save each DataFrame separately
+        for key, df in merged_dict.items():
+            output_file = os.path.join(saving_path_ind, f"{key}")
+            df.to_csv(output_file, index=False)
+            print(f"Independent file saved to: {output_file}")
+    else:
+        # Save the concatenated DataFrame
+        final_output_file = os.path.join(saving_path_ind, "concatenated_results.csv")
+        final_df = pd.concat(merged_dict, axis=0, ignore_index=True)
+        final_df.to_csv(final_output_file, index=False)
+        print(f"Concatenated file saved to: {final_output_file}")
 
 def main():
     start_time = time.time()
@@ -407,23 +477,23 @@ def main():
 
     parser = argparse.ArgumentParser(description="Import CSV files from a directory.")
 
-    # Precise input directory (default = ./data)
+    # Input directory (default = ./data)
     parser.add_argument(
         "-d", "--directory", 
         type=str, 
         default=default_data_path, 
         help="Directory containing CSV files (default: './data')"
     )
-    # Precise output directory (default = ./results)
+    # Output directory (default = ./results)
     parser.add_argument(
         "-o", "--output", 
         type=str, 
         default=default_results_path, 
         help="Directory to save results (default: './results')"
     )
-    # Precise if you want individual results (default = 1 concatenated file)
+    # Save individual results or concatenated file
     parser.add_argument(
-        "--ind", 
+        "-ind", 
         action="store_true", 
         help="Save independent files"
     )
@@ -441,20 +511,20 @@ def main():
     data_dict = import_csv_files(path)
     if data_dict:
         problematic_dfs = check_data_integrity(data_dict)
+        reorganize_columns(data_dict)
         recalibrate_scores(data_dict, problematic_dfs)
         replace_missing_by_mean(data_dict) 
         scale_dict = compute_raw_scales(data_dict) 
         replacement_dicts = {'Mean Current Health': {5:100, 4.4:84, 3.4:61, 2:25, 1:0}}
         transformed_scale_dict = transform_raw_scales_to_0_100(scale_dict, replacement_dicts)
         composite_scores_dict = compute_composite_scores(transformed_scale_dict)
-        print(composite_scores_dict)
-        # final_df = pd.concat(transformed_scale_dict.values(), ignore_index=True)
-        # save_results(transformed_scale_dict, final_df, saving_path_ind, args.ind)
+        merged_dict = merge_data(data_dict, composite_scores_dict)
+        save_results(merged_dict, saving_path_ind, args)
 
         end_time = time.time()
         elapsed_time = end_time - start_time
 
-        print(f"Done in {elapsed_time:.2f} seconds.")
+    print(f"Done in {elapsed_time:.2f} seconds.")
     print('')
 
 if __name__ == "__main__":
