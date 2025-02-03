@@ -8,6 +8,10 @@ import subprocess
 import sys
 import numpy as np
 
+VERSION = "1.2.2"
+AUTHOR = "Matthieu Gallou-Guyot"
+CONTACT = "matthieu.gallou.guyot@gmail.com"
+
 def print_warning(message):
     """Prints a warning message in yellow"""
     print(f"\033[93mWarning: {message}\033[0m")
@@ -465,6 +469,13 @@ def save_results(merged_dict, saving_path_ind, args):
         print(f"Concatenated file saved to: {final_output_file}")
 
 def main():
+
+    print("=" * 50)
+    print(f"GPAQ Scoring - Version {VERSION}")
+    # print(f"Author : {AUTHOR}")
+    print(f"Contact : {CONTACT}")
+    print("=" * 50)
+
     start_time = time.time()
 
     default_data_path = "./data"
